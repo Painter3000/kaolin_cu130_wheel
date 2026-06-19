@@ -20,6 +20,7 @@ jobs:
     env:
       DEBIAN_FRONTEND: noninteractive
       FORCE_CUDA: "1"
+      IGNORE_TORCH_VER: "1"
       # Nur Blackwell sm_120 – kein Multi-Arch, spart RAM und Zeit
       TORCH_CUDA_ARCH_LIST: "12.0"
       # Kaolin ist speicherintensiv – niedrig halten um OOM zu vermeiden
@@ -58,10 +59,9 @@ jobs:
           REF="${{ github.event.inputs.kaolin_ref }}"
           REF="${REF:-master}"
           echo "Cloning kaolin @ $REF"
-          # Credential-Prompts deaktivieren – public repo, kein Login nötig
           git config --global credential.helper ""
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          GIT_TERMINAL_PROMPT=0 git clone https://github.com/NVlabs/kaolin.git
+          GIT_TERMINAL_PROMPT=0 git clone --recursive \
+            https://github.com/NVIDIAGameWorks/kaolin.git
           cd kaolin
           git checkout "$REF"
           git log --oneline -1
